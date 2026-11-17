@@ -1,46 +1,54 @@
-import { useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useApp } from "../context/AppContext";
+import { LEVELS, LEVEL_KEYS } from "../data/mountains";
 
 export default function OnboardingPage() {
+  const { level, setLevel, user } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // 버튼을 눌렀을 때 실행되는 함수
-  const handleSelectLevel = (level) => {
-    // 1. 브라우저 로컬 스토리지에 사용자가 고른 난이도('초급', '중급', '고급')를 저장
-    localStorage.setItem("userLevel", level);
+  // 이미 레벨을 골랐다면 바로 홈으로 (레벨을 바꾸러 온 경우는 제외)
+  if (level && !location.state?.change) {
+    return <Navigate to="/home" replace />;
+  }
 
-    // 2. 홈 화면(/home)으로 페이지 이동
+  const handleSelectLevel = (newLevel) => {
+    setLevel(newLevel);
     navigate("/home");
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "60px 20px" }}>
-      <h1>🏔️ 산록(山麓)에 오신 것을 환영합니다!</h1>
-      <p style={{ color: "#666", marginBottom: "40px" }}>
-        회원님의 등산 수준을 선택해주세요. 맞춤 산을 추천해 드릴게요.
-      </p>
+    <main className="onboarding">
+      <div className="onboarding-inner">
+        <p className="eyebrow">산을 기록하다</p>
+        <h1>
+          <span className="logo-mark">⛰</span> 산록(山麓)에 오신 것을 환영합니다
+        </h1>
+        <p className="onboarding-sub">
+          {user ? `${user.nickname}님, ` : ""}나의 등산 레벨을 골라 주세요. 레벨에 맞는 명산을 추천해 드릴게요.
+        </p>
 
-      <div style={{ display: "flex", justifyContent: "center", gap: "16px" }}>
-        <button
-          onClick={() => handleSelectLevel("초급")}
-          style={{ padding: "14px 24px", fontSize: "16px", cursor: "pointer", borderRadius: "8px" }}
-        >
-          🌱 등린이 (초급)
-        </button>
+        <div className="level-cards">
+          {LEVEL_KEYS.map((lvl) => (
+            <button
+              key={lvl}
+              className={`level-card ${lvl === level ? "active" : ""}`}
+              onClick={() => handleSelectLevel(lvl)}
+            >
+              <span className="level-card-emoji">{LEVELS[lvl].emoji}</span>
+              <strong>{LEVELS[lvl].label}</strong>
+              <span className="level-card-sub">{lvl}</span>
+              <span className="level-card-desc">{LEVELS[lvl].desc}</span>
+            </button>
+          ))}
+        </div>
 
-        <button
-          onClick={() => handleSelectLevel("중급")}
-          style={{ padding: "14px 24px", fontSize: "16px", cursor: "pointer", borderRadius: "8px" }}
-        >
-          🌿 취미 등산러 (중급)
-        </button>
-
-        <button
-          onClick={() => handleSelectLevel("고급")}
-          style={{ padding: "14px 24px", fontSize: "16px", cursor: "pointer", borderRadius: "8px" }}
-        >
-          🌲 산악인 (고급)
-        </button>
+        {!user && (
+          <p className="onboarding-login">
+            이미 계정이 있나요? <Link to="/login">로그인</Link>
+          </p>
+        )}
       </div>
-    </div>
+    </main>
   );
 }

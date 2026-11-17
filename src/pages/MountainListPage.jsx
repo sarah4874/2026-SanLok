@@ -1,86 +1,58 @@
-import { mountainList } from "../data/mountains";
+import { useSearchParams } from "react-router-dom";
+import { useApp } from "../context/AppContext";
+import { LEVELS, mountainList } from "../data/mountains";
+import MountainCard from "../components/MountainCard";
 
 export default function MountainListPage() {
+  const { completions } = useApp();
+  // 검색어를 주소(?q=설악)에 담아서 새로고침·공유해도 그대로 유지
+  const [params, setParams] = useSearchParams();
+  const query = params.get("q") || "";
+  const keyword = query.trim();
+
+  const handleSearch = (value) => {
+    setParams(value ? { q: value } : {}, { replace: true });
+  };
+
+  // 이름, 지역, 레벨 이름(등린이/중수/챌린저), 목록 이름(명산100+)으로 검색
+  const filtered = mountainList.filter(
+    (m) =>
+      !keyword ||
+      m.name.includes(keyword) ||
+      m.location.includes(keyword) ||
+      m.area.includes(keyword) ||
+      m.level.includes(keyword) ||
+      LEVELS[m.level].label.includes(keyword) ||
+      m.seriesLabel.includes(keyword),
+  );
+
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 20px" }}>
-      <h1 style={{ fontSize: "1.8rem", marginBottom: "8px" }}>명산 찾기</h1>
-      <p style={{ color: "#666", marginBottom: "32px" }}>
-        전국의 대표 명산 목록을 탐색해 보세요.
-      </p>
+    <main className="page">
+      <h1 className="page-title">명산 찾기</h1>
 
-      {/* 전체 산 카드 리스트 */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-          gap: "20px",
-        }}
-      >
-        {mountainList.map((mountain) => (
-          <div
-            key={mountain.id}
-            style={{
-              border: "1px solid #eaeaea",
-              borderRadius: "12px",
-              padding: "20px",
-              backgroundColor: "#fff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.03)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "12px",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "0.75rem",
-                  padding: "3px 8px",
-                  borderRadius: "4px",
-                  backgroundColor:
-                    mountain.level === "초급"
-                      ? "#eef8f2"
-                      : mountain.level === "중급"
-                      ? "#fef7ee"
-                      : "#fdf0f0",
-                  color:
-                    mountain.level === "초급"
-                      ? "#227042"
-                      : mountain.level === "중급"
-                      ? "#9a5b13"
-                      : "#b02a2a",
-                  fontWeight: "bold",
-                }}
-              >
-                {mountain.level}
-              </span>
-              <span style={{ fontSize: "0.8rem", color: "#888" }}>
-                {mountain.elevation}
-              </span>
-            </div>
+      <input
+        className="search-input"
+        type="search"
+        placeholder="산 이름이나 지역으로 검색 (예: 설악, 강원)"
+        value={query}
+        onChange={(e) => handleSearch(e.target.value)}
+        aria-label="명산 검색"
+      />
 
-            <h3 style={{ margin: "0 0 6px 0", fontSize: "1.2rem" }}>
-              {mountain.name}
-            </h3>
-            <p style={{ margin: "0 0 10px 0", color: "#666", fontSize: "0.85rem" }}>
-              {mountain.location}
-            </p>
-            <p
-              style={{
-                margin: 0,
-                color: "#444",
-                fontSize: "0.88rem",
-                lineHeight: "1.5",
-              }}
-            >
-              {mountain.desc}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
+      {filtered.length > 0 ? (
+        <div className="card-grid three">
+          {filtered.map((m) => (
+            <MountainCard key={m.id} mountain={m} completed={!!completions[m.id]} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty-box">
+          <p>‘{keyword}’에 맞는 산이 없어요.</p>
+          <button className="btn btn-ghost" onClick={() => handleSearch("")}>
+            검색 지우기
+          </button>
+        </div>
+      )}
+    </main>
   );
 }

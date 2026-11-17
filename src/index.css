@@ -1,10 +1,75 @@
+:root {
+  /* 색상 */
+  --forest: #2e4f3b;
+  --forest-dark: #213a2b;
+  --forest-soft: #4f7c65;
+  --mint: #e6f0e8;
+  --cream: #f7f1df;
+  --paper: #fffdf7;
+  --line: #e3d9c3;
+  --ink: #2f2418;
+  --ink-soft: #6b5d4c;
+  --ink-faint: #9a8c79;
+  --easy: #3f8a5a;
+  --easy-bg: #e5f2e8;
+  --medium: #a0611a;
+  --medium-bg: #fbefdc;
+  --hard: #b23b3b;
+  --hard-bg: #fbe5e2;
+  --warn-bg: #fff4dc;
+  --warn: #8a5a00;
+  --danger-bg: #fde4e1;
+  --danger: #b3261e;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(47, 36, 24, 0.05), 0 6px 20px rgba(47, 36, 24, 0.05);
+}
+
 * {
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  color: #3d2b1f;
-  background-color: #f7f1df;
-  font-family: "Malgun Gothic", sans-serif;
+  color: var(--ink);
+  background-color: var(--cream);
+  font-family:
+    "Pretendard Variable",
+    Pretendard,
+    -apple-system,
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    sans-serif;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
