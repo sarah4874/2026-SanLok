@@ -1692,13 +1692,80 @@ textarea:focus {
 }
 
 /* ===================== 산 상세 카드 ===================== */
+.detail-page {
+  max-width: 680px;
+}
+
 .detail-card {
-  max-width: 460px;
-  padding: 28px;
+  padding: 32px;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 22px;
   box-shadow: var(--shadow);
+}
+
+.detail-section {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-section h2 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.detail-section p {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.detail-section p.muted {
+  margin-top: 10px;
+}
+
+.gear-list,
+.nearby-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gear-list li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f1ebdc;
+  font-size: 0.88rem;
+}
+
+.gear-list li.season {
+  background: var(--mint);
+  color: var(--forest);
+  font-weight: 600;
+}
+
+.nearby-list a {
+  display: inline-block;
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nearby-list a:hover {
+  border-color: var(--forest-soft);
+}
+
+.nearby-list small {
+  margin-left: 4px;
+  font-weight: 400;
+  color: var(--ink-faint);
 }
 
 .detail-card h1 {
@@ -1890,7 +1957,7 @@ textarea:focus {
   }
 
   .detail-card {
-    max-width: none;
+    padding: 24px 20px;
   }
 }
 
