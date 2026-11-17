@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router-do
 import { useApp } from "../context/AppContext";
 import { LEVELS, LEVEL_KEYS, getMountain, mountainList } from "../data/mountains";
 import useForecast from "../hooks/useForecast";
+import AiCoursePanel from "../components/AiCoursePanel";
 import { describeWeather, getSafetyTips } from "../utils/weather";
 import { makeId } from "../utils/storage";
 import {
@@ -15,16 +16,23 @@ import {
   toMinutes,
 } from "../utils/time";
 
-// 산 높이로 기본 타임라인 만들기 (분 단위)
-function generateSteps(mountain, startTime) {
-  const { up, down } = estimateHikeMinutes(mountain.height);
+// 기본 타임라인 만들기 (분 단위)
+// course(AI 추천 코스)가 있으면 그 코스의 시간으로, 없으면 산 높이로 계산
+function generateSteps(mountain, startTime, course = null) {
+  const { up, down } = course
+    ? { up: course.upMinutes, down: course.downMinutes }
+    : estimateHikeMinutes(mountain.height);
   const s = toMinutes(startTime);
   const half = Math.round(up / 2 / 10) * 10;
   const summit = s + up + 10; // 중간 휴식 10분 포함
   return [
-    { time: s, title: "들머리 출발", memo: "스트레칭, 물·간식 확인" },
+    {
+      time: s,
+      title: course?.start ? `${course.start} 출발` : "들머리 출발",
+      memo: course ? `${course.name} · 스트레칭, 물·간식 확인` : "스트레칭, 물·간식 확인",
+    },
     { time: s + half, title: "중간 휴식", memo: "10분 휴식, 수분 보충" },
-    { time: summit, title: `${mountain.name} 정상 도착`, memo: "정상 인증 사진" },
+    { time: summit, title: `${mountain.name} 정상 도착`, memo: course?.caution || "정상 인증 사진" },
     { time: summit + 30, title: "하산 시작", memo: "점심·휴식 30분 후 출발" },
     { time: summit + 30 + down, title: "하산 완료", memo: "" },
   ].map((step) => ({ id: makeId(), time: fromMinutes(step.time), title: step.title, memo: step.memo }));
@@ -48,7 +56,6 @@ export default function PlannerPage() {
     <main className="page">
       <div className="page-head">
         <h1>산행 플래너</h1>
-        <p className="muted">산과 날짜를 고르면 정상 날씨를 보여 드려요. 타임라인은 분 단위로 직접 고칠 수 있어요.</p>
       </div>
       <PlannerEditor
         key={editorKey}
@@ -75,6 +82,7 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
   const [startTime, setStartTime] = useState(initialPlan?.startTime || "08:00");
   const [steps, setSteps] = useState(() => initialPlan?.steps || generateSteps(startMountain, "08:00"));
   const [memo, setMemo] = useState(initialPlan?.memo || "");
+  const [course, setCourse] = useState(initialPlan?.course || null); // 적용한 AI 코스
   // 새 계획을 저장하면 주소가 바뀌며 화면이 새로 그려지므로, 저장 완료 표시는 location.state로 넘겨받음
   const [message, setMessage] = useState(location.state?.saved ? "저장했어요!" : "");
 
@@ -90,12 +98,19 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
   const changeMountain = (id) => {
     const next = getMountain(id);
     setMountainId(next.id);
+    setCourse(null);
     setSteps(generateSteps(next, startTime)); // 산이 바뀌면 타임라인도 새로
     setMessage("");
   };
 
   const regenerate = () => {
-    setSteps(generateSteps(mountain, startTime));
+    setSteps(generateSteps(mountain, startTime, course));
+    setMessage("");
+  };
+
+  const applyCourse = (c) => {
+    setCourse(c);
+    setSteps(generateSteps(mountain, startTime, c));
     setMessage("");
   };
 
@@ -127,6 +142,7 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
       startTime,
       steps: sorted.map((s) => ({ ...s, title: s.title.trim() })),
       memo: memo.trim(),
+      course,
     });
     if (!saved) {
       setMessage("저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.");
@@ -145,7 +161,7 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
             <span>어느 산에 갈까요?</span>
             <select value={mountainId} onChange={(e) => changeMountain(e.target.value)}>
               {LEVEL_KEYS.map((lvl) => (
-                <optgroup key={lvl} label={`${LEVELS[lvl].emoji} ${LEVELS[lvl].label}`}>
+                <optgroup key={lvl} label={LEVELS[lvl].full}>
                   {mountainList
                     .filter((m) => m.level === lvl)
                     .sort((a, b) => a.name.localeCompare(b.name, "ko"))
@@ -178,7 +194,7 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
               <div className="weather-error">
                 <p className="form-error">{forecast.error}</p>
                 <button className="btn btn-ghost btn-small" onClick={forecast.retry}>
-                  ↻ 다시 시도
+                  다시 시도
                 </button>
               </div>
             )}
@@ -210,17 +226,19 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
                 <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
               </label>
               <button className="btn btn-ghost btn-small" onClick={regenerate}>
-                ↻ 추천 일정으로 다시 만들기
+                {course ? "코스 기준으로" : "기본값으로"} 다시 만들기
               </button>
             </div>
           </div>
 
+          <AiCoursePanel key={mountain.id} mountain={mountain} selectedName={course?.name} onApply={applyCourse} />
+
           {(endsAfterSunset || startsBeforeSunrise) && (
             <div className="tip warn">
               {endsAfterSunset && (
-                <p>⚠️ 하산 완료가 일몰({day.sunset}) 이후예요. 출발을 앞당기거나 헤드랜턴을 챙기세요.</p>
+                <p>하산 완료가 일몰({day.sunset})보다 늦어요. 출발을 앞당기거나 헤드랜턴을 챙기세요.</p>
               )}
-              {startsBeforeSunrise && <p>🔦 일출({day.sunrise}) 전에 출발해요. 헤드랜턴이 필요해요.</p>}
+              {startsBeforeSunrise && <p>일출({day.sunrise}) 전에 출발해요. 헤드랜턴이 필요해요.</p>}
             </div>
           )}
 
@@ -277,7 +295,10 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
             />
           </label>
 
-          <p className="muted small">※ 추천 일정은 높이로 계산한 대략적인 시간이에요. 실제 코스에 맞게 고쳐 쓰세요.</p>
+          <p className="muted small">
+            ※ {course ? `'${course.name}' AI 추천 시간` : "높이로 계산한 대략적인 시간"}으로 만든 일정이에요. 실제
+            코스에 맞게 고쳐 쓰세요.
+          </p>
         </section>
 
         <section className="panel save-box">
@@ -309,13 +330,10 @@ function WeatherDetail({ day }) {
   return (
     <>
       <div className="weather-main">
-        <span className="weather-big-icon">{w.icon}</span>
-        <div>
-          <strong>{w.text}</strong>
-          <p>
-            최고 {day.max}° / 최저 {day.min}°
-          </p>
-        </div>
+        <p className="weather-temp-big">
+          {day.max}°<span> / {day.min}°</span>
+        </p>
+        <strong>{w.text}</strong>
       </div>
       <dl className="weather-facts">
         <div>
