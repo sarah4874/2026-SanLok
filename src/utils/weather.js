@@ -39,6 +39,23 @@ export function describeWeather(code) {
 
 const cache = new Map();
 
+// 연결이 잠깐 끊기는 경우가 있어서 실패하면 조금 기다렸다가 두 번 더 시도합니다.
+async function fetchWithRetry(url, tries = 3) {
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      if (i === tries - 1) {
+        console.warn("날씨 불러오기 실패:", err);
+        throw new Error("날씨 정보를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 800 * (i + 1)));
+    }
+  }
+}
+
 export async function fetchForecast(mountain) {
   const key = mountain.id;
   if (cache.has(key)) return cache.get(key);
@@ -54,21 +71,29 @@ export async function fetchForecast(mountain) {
     forecast_days: "16",
   });
 
-  const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
-  if (!res.ok) throw new Error("날씨 정보를 불러오지 못했어요.");
-  const json = await res.json();
+  const url = `https://api.open-meteo.com/v1/forecast?${params}`;
+  const json = await fetchWithRetry(url);
   const d = json.daily;
 
-  const days = d.time.map((date, i) => ({
-    date,
-    code: d.weather_code[i],
-    max: Math.round(d.temperature_2m_max[i]),
-    min: Math.round(d.temperature_2m_min[i]),
-    rain: d.precipitation_probability_max[i] ?? 0,
-    wind: Math.round(d.wind_speed_10m_max[i] * 10) / 10,
-    sunrise: d.sunrise[i].slice(11, 16),
-    sunset: d.sunset[i].slice(11, 16),
-  }));
+  // 예보 마지막 날은 값이 비어(null) 있을 때가 있어서 빼고 씁니다.
+  const days = d.time
+    .map((date, i) => ({
+      date,
+      code: d.weather_code[i],
+      max: d.temperature_2m_max[i],
+      min: d.temperature_2m_min[i],
+      rain: d.precipitation_probability_max[i] ?? 0,
+      wind: d.wind_speed_10m_max[i],
+      sunrise: d.sunrise[i]?.slice(11, 16),
+      sunset: d.sunset[i]?.slice(11, 16),
+    }))
+    .filter((day) => day.max !== null && day.min !== null && day.wind !== null && day.code !== null)
+    .map((day) => ({
+      ...day,
+      max: Math.round(day.max),
+      min: Math.round(day.min),
+      wind: Math.round(day.wind * 10) / 10,
+    }));
 
   cache.set(key, days);
   return days;

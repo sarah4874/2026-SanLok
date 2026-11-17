@@ -174,7 +174,14 @@ function PlannerEditor({ initialPlan, initialMountain, initialDate }) {
           </h3>
           <div className="weather-box">
             {forecast.status === "loading" && <p className="muted">날씨를 불러오는 중…</p>}
-            {forecast.status === "error" && <p className="form-error">{forecast.error}</p>}
+            {forecast.status === "error" && (
+              <div className="weather-error">
+                <p className="form-error">{forecast.error}</p>
+                <button className="btn btn-ghost btn-small" onClick={forecast.retry}>
+                  ↻ 다시 시도
+                </button>
+              </div>
+            )}
             {forecast.status === "done" && !day && (
               <p className="muted">
                 {date > lastDay

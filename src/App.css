@@ -1771,6 +1771,10 @@ textarea:focus {
   background: #fff;
 }
 
+.weather-error .form-error {
+  margin-bottom: 10px;
+}
+
 .planner-right {
   display: flex;
   flex-direction: column;
