@@ -298,7 +298,7 @@
   background: #fff;
   color: var(--forest);
   border: none;
-  border-radius: 4px;
+  border-radius: 999px;
   padding: 6px 14px;
   font-weight: 700;
   font-size: 0.85rem;
@@ -344,7 +344,7 @@
 .nav-auth {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 4px;
+  border-radius: 999px;
   padding: 5px 13px;
   color: #fff;
   font-size: 0.85rem;
@@ -415,6 +415,7 @@
 .level-card:hover,
 .level-card.active {
   border-color: var(--forest-soft);
+  transform: translateY(-3px);
   box-shadow: var(--shadow);
 }
 
@@ -552,7 +553,7 @@ textarea:focus {
 
 .hero-text {
   padding: 36px;
-  border-radius: 10px;
+  border-radius: 22px;
   color: #fff;
   background:
     linear-gradient(160deg, rgba(33, 58, 43, 0.15), rgba(33, 58, 43, 0.6)),
@@ -593,7 +594,7 @@ textarea:focus {
 
 .hero-status {
   padding: 28px;
-  border-radius: 10px;
+  border-radius: 22px;
   background: var(--paper);
   border: 1px solid var(--line);
   display: flex;
@@ -645,7 +646,7 @@ textarea:focus {
 
 .progress {
   height: 10px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: #ece4d2;
   overflow: hidden;
 }
@@ -657,7 +658,7 @@ textarea:focus {
 .progress-bar {
   height: 100%;
   background: linear-gradient(90deg, var(--forest-soft), var(--forest));
-  border-radius: 4px;
+  border-radius: 999px;
   transition: width 0.4s;
 }
 
@@ -697,14 +698,23 @@ textarea:focus {
 .intro-box {
   position: relative;
   overflow: hidden;
-  padding: 44px 44px 36px;
-  border-radius: 10px;
+  padding: 40px 44px 36px;
+  border-radius: 22px;
   color: #fff;
-  background-color: var(--forest);
-  /* 등고선 무늬 */
-  background-image:
-    repeating-radial-gradient(ellipse at 88% 120%, transparent 0 22px, rgba(255, 255, 255, 0.07) 22px 23px),
-    repeating-radial-gradient(ellipse at 62% -40%, transparent 0 30px, rgba(255, 255, 255, 0.05) 30px 31px);
+  background:
+    linear-gradient(160deg, rgba(33, 58, 43, 0.1), rgba(33, 58, 43, 0.55)),
+    linear-gradient(135deg, #4f7c65 0%, #2e4f3b 100%);
+}
+
+.intro-box::after {
+  /* 산 실루엣 */
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 110px;
+  background: rgba(255, 255, 255, 0.06);
+  clip-path: polygon(0 100%, 0 70%, 14% 35%, 26% 60%, 42% 10%, 58% 55%, 70% 30%, 84% 62%, 100% 40%, 100% 100%);
+  pointer-events: none;
 }
 
 .intro-eyebrow {
@@ -782,6 +792,7 @@ textarea:focus {
 
 .mountain-card:hover {
   border-color: var(--forest-soft);
+  transform: translateY(-2px);
   box-shadow: var(--shadow);
 }
 
@@ -813,7 +824,7 @@ textarea:focus {
 .done-mark {
   font-size: 0.72rem;
   padding: 2px 7px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: var(--forest);
   color: #fff;
 }
@@ -892,7 +903,7 @@ textarea:focus {
 .search-input {
   padding: 13px 16px;
   font-size: 1rem;
-  border-radius: 6px;
+  border-radius: 12px;
 }
 
 .chip-row {
@@ -903,7 +914,7 @@ textarea:focus {
 
 .chip {
   padding: 7px 14px;
-  border-radius: 4px;
+  border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--paper);
   font-size: 0.88rem;
@@ -948,7 +959,7 @@ textarea:focus {
   padding: 28px;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 22px;
 }
 
 .detail-meta {
@@ -1046,7 +1057,7 @@ textarea:focus {
   padding: 14px 6px;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 14px;
   cursor: pointer;
 }
 
@@ -1257,7 +1268,7 @@ textarea:focus {
   display: inline-block;
   margin: 0 0 6px;
   padding: 1px 8px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: #eef4ef;
   color: var(--forest-soft);
   font-size: 0.75rem;
@@ -1270,7 +1281,7 @@ textarea:focus {
   gap: 10px;
   padding: 8px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 12px;
   background: #fff;
 }
 
@@ -1341,7 +1352,7 @@ textarea:focus {
   padding: 10px 12px 10px 16px;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 12px;
 }
 
 .plan-item.current {
@@ -1368,7 +1379,7 @@ textarea:focus {
 .plan-tag {
   font-size: 0.75rem;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: #ece4d2;
   color: var(--ink-soft);
 }
@@ -1456,7 +1467,7 @@ textarea:focus {
   gap: 2px;
   padding: 14px;
   border: 2px solid var(--line);
-  border-radius: 6px;
+  border-radius: 12px;
   background: #fff;
   text-align: left;
   cursor: pointer;
@@ -1489,7 +1500,7 @@ textarea:focus {
   padding: 12px 16px;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 12px;
 }
 
 .done-list a {
@@ -1551,7 +1562,7 @@ textarea:focus {
   max-width: 420px;
   padding: 24px;
   background: var(--paper);
-  border-radius: 10px;
+  border-radius: 18px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
@@ -1620,8 +1631,8 @@ textarea:focus {
   top: 44px;
   background: #fff;
   color: var(--ink);
-  border-radius: 6px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   overflow: hidden;
   z-index: 100;
 }
@@ -1689,7 +1700,7 @@ textarea:focus {
   padding: 32px;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 22px;
   box-shadow: var(--shadow);
 }
 
@@ -1725,7 +1736,7 @@ textarea:focus {
 
 .gear-list li {
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: #f1ebdc;
   font-size: 0.88rem;
 }
@@ -1823,107 +1834,8 @@ textarea:focus {
 .weather-box {
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 12px;
   background: #fff;
-}
-
-/* ===================== AI 코스 추천 ===================== */
-.ai-panel {
-  margin-bottom: 18px;
-  padding: 16px 18px;
-  border: 1px solid #d6e4da;
-  border-radius: 8px;
-  background: #f4f9f5;
-}
-
-.ai-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.ai-head p {
-  margin-top: 2px;
-}
-
-.ai-panel > .muted {
-  margin-top: 10px;
-}
-
-.ai-error {
-  margin-top: 10px;
-}
-
-.ai-error .form-error {
-  margin-bottom: 8px;
-}
-
-.ai-summary {
-  margin: 12px 0 0;
-  color: var(--ink-soft);
-  font-size: 0.92rem;
-}
-
-.ai-courses {
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-}
-
-.ai-courses li {
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: #fff;
-}
-
-.ai-courses li.selected {
-  border-color: var(--forest);
-  box-shadow: 0 0 0 1px var(--forest);
-}
-
-.ai-course-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.ai-difficulty {
-  padding: 1px 8px;
-  border-radius: 4px;
-  background: var(--cream);
-  color: var(--ink-soft);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.ai-course-meta {
-  margin: 4px 0;
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-}
-
-.ai-course-note {
-  margin: 2px 0;
-  font-size: 0.85rem;
-}
-
-.ai-course-note.caution {
-  color: var(--warn);
-}
-
-.ai-courses .btn {
-  margin-top: 8px;
-}
-
-.ai-disclaimer {
-  margin: 12px 0 0;
-  font-size: 0.78rem;
-  color: var(--ink-faint);
 }
 
 .weather-error .form-error {
@@ -2009,7 +1921,7 @@ textarea:focus {
 .done-chips a {
   display: inline-block;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: var(--mint);
   color: var(--forest);
   font-size: 0.88rem;
@@ -2204,195 +2116,53 @@ textarea:focus {
   }
 }
 
-/* ===================== 정리된 스타일 (덜 꾸민 버전) ===================== */
-.panel,
-.mountain-card,
-.detail-card,
-.auth-card,
-.modal,
-.login-required {
+/* ===================== 산행 플래너 (덜 꾸민 스타일) ===================== */
+/* 플래너 안에서만 모서리를 덜 둥글게, 그림자 없이 */
+.planner {
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow: none;
+}
+
+.planner .panel {
   box-shadow: none;
 }
 
-/* 레벨 표시: 막대 3칸 */
-.level-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-  background: none;
-  color: var(--ink-soft);
-  font-size: 0.8rem;
-  font-weight: 600;
+.planner .timeline-row {
+  border-radius: 6px;
 }
 
-.level-bars {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 2px;
+.planner .timeline-gap {
+  border-radius: 4px;
 }
 
-.level-bars i {
-  display: block;
-  width: 4px;
-  background: #ddd3bf;
-}
-
-.level-bars i:nth-child(1) {
-  height: 6px;
-}
-
-.level-bars i:nth-child(2) {
-  height: 9px;
-}
-
-.level-bars i:nth-child(3) {
-  height: 12px;
-}
-
-.level-bars i.on {
-  background: var(--forest);
-}
-
-/* 산 카드 */
-.mountain-card {
-  display: flex;
-  flex-direction: column;
-  padding: 18px 20px 16px;
-  border-radius: 8px;
-  transition: border-color 0.15s;
-}
-
-.mountain-card:hover {
-  border-color: var(--forest);
-}
-
-.mountain-card.completed {
-  background: var(--paper);
-  border-left: 3px solid var(--forest);
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  font-size: 0.75rem;
-}
-
-.card-series {
-  color: var(--ink-faint);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.done-mark {
-  padding: 1px 6px;
-  border-radius: 3px;
-  background: var(--forest);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.mountain-card h3 {
-  margin: 0;
-  font-size: 1.15rem;
-}
-
-.mountain-card .card-height {
-  margin: 2px 0 14px;
-  font-size: 1.9rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--forest);
-  font-variant-numeric: tabular-nums;
-}
-
-.mountain-card .card-height span {
-  margin-left: 2px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--ink-faint);
-}
-
-.card-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
-
-.card-bottom .card-location {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--ink-faint);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 온보딩 */
-.onboarding h1 {
-  font-size: 2.6rem;
-  font-weight: 800;
-}
-
-.onboarding h1 span {
-  margin-left: 8px;
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: var(--ink-faint);
-}
-
-.level-card {
-  align-items: flex-start;
-  text-align: left;
-  border-width: 1px;
-  border-radius: 8px;
-  padding: 24px 22px;
-}
-
-.level-card:hover,
-.level-card.active {
-  border-color: var(--forest);
-  box-shadow: none;
-}
-
-.level-card-no {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--ink-faint);
-  font-variant-numeric: tabular-nums;
-}
-
-.level-card strong {
-  font-size: 1.4rem;
-}
-
-/* 날씨 */
-.weather-main {
+/* 날씨: 아이콘 대신 기온 숫자를 크게 */
+.planner .weather-main {
   display: block;
 }
 
-.weather-temp-big {
-  margin: 0;
+.planner .weather-main .weather-temp-big {
+  margin: 0 0 2px;
   font-size: 2.2rem;
   font-weight: 800;
   line-height: 1.1;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
-.weather-temp-big span {
+.planner .weather-temp-big span {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--ink-faint);
 }
 
-.weather-facts {
+.planner .weather-box {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.planner .weather-facts {
   background: transparent;
   padding: 12px 0;
   border-top: 1px solid var(--line);
@@ -2400,17 +2170,21 @@ textarea:focus {
   border-radius: 0;
 }
 
-/* 상세 페이지 높이 숫자 강조 */
-.detail-card .detail-facts dd {
-  font-variant-numeric: tabular-nums;
-}
-
-/* AI 코스 */
+/* AI 코스 추천 */
 .ai-panel {
-  background: transparent;
+  margin-bottom: 18px;
+  padding: 16px 18px;
   border: 1px solid var(--line);
   border-left: 3px solid var(--forest);
   border-radius: 6px;
+}
+
+.ai-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .ai-tag {
@@ -2424,43 +2198,76 @@ textarea:focus {
   vertical-align: 2px;
 }
 
+.ai-panel > .muted,
+.ai-error {
+  margin-top: 10px;
+}
+
+.ai-error .form-error {
+  margin-bottom: 8px;
+}
+
+.ai-summary {
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.ai-courses {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.ai-courses li {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+}
+
 .ai-courses li.selected {
-  box-shadow: none;
   border-color: var(--forest);
 }
 
-/* 칩·버튼 */
-.chip {
+.ai-course-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-difficulty {
+  padding: 1px 8px;
   border-radius: 4px;
+  background: var(--cream);
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
-.level-button,
-.nav-auth {
-  border-radius: 4px;
+.ai-course-meta {
+  margin: 4px 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
 }
 
-.menu-toggle {
-  width: auto;
-  font-size: 0.9rem;
-  font-weight: 600;
+.ai-course-note {
+  margin: 2px 0;
+  font-size: 0.85rem;
 }
 
-/* 404 */
-.big-number {
-  margin: 0;
-  font-size: 3.5rem;
-  font-weight: 800;
-  color: var(--line);
+.ai-course-note.caution {
+  color: var(--warn);
 }
 
-.weather-main .weather-temp-big {
-  margin: 0 0 2px;
-  font-size: 2.2rem;
-  color: var(--ink);
+.ai-courses .btn {
+  margin-top: 8px;
 }
 
-.weather-box {
-  padding: 0;
-  border: none;
-  background: transparent;
+.ai-disclaimer {
+  margin: 12px 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
 }
