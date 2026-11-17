@@ -29,7 +29,6 @@ export default function MyPage() {
     .map(([id, record]) => ({ mountain: getMountain(id), record }))
     .filter((c) => c.mountain)
     .sort((a, b) => b.record.date.localeCompare(a.record.date));
-  const highest = completedList.reduce((max, c) => (!max || c.mountain.height > max.height ? c.mountain : max), null);
 
   const saveNickname = (e) => {
     e.preventDefault();
@@ -144,25 +143,6 @@ export default function MyPage() {
         ) : (
           <p className="muted">아직 완등 기록이 없어요.</p>
         )}
-      </section>
-
-      {/* 4. 요약 3칸 */}
-      <section className="my-stats">
-        <div className="panel mini-stat">
-          <span>완등한 명산</span>
-          <strong>{completedList.length}</strong>
-          <small>/ {SERIES_TOTAL["100"] + SERIES_TOTAL["100+"]}</small>
-        </div>
-        <div className="panel mini-stat">
-          <span>예정된 산행</span>
-          <strong>{upcoming.length}</strong>
-          <small>{upcoming[0] ? `가장 가까운 날 ${formatFullDate(upcoming[0].date)}` : "계획 없음"}</small>
-        </div>
-        <div className="panel mini-stat">
-          <span>가장 높이 오른 산</span>
-          <strong className="small-strong">{highest ? highest.name : "-"}</strong>
-          <small>{highest ? highest.elevation : "완등 기록 없음"}</small>
-        </div>
       </section>
     </main>
   );
