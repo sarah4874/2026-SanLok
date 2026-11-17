@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { LEVELS, mountainList } from "../data/mountains";
@@ -5,14 +6,21 @@ import MountainCard from "../components/MountainCard";
 
 export default function MountainListPage() {
   const { completions } = useApp();
-  // 검색어를 주소(?q=설악)에 담아서 새로고침·공유해도 그대로 유지
   const [params, setParams] = useSearchParams();
-  const query = params.get("q") || "";
+
+  // 입력창 값은 화면 안(state)에서 바로 바꿔야 한글 조합(ㄴ→나→남)이 끊기지 않아요.
+  // 주소(?q=설악)에는 입력을 멈추고 0.3초 뒤에 반영해서, 새로고침·공유해도 검색어가 유지돼요.
+  const [query, setQuery] = useState(() => params.get("q") || "");
   const keyword = query.trim();
 
-  const handleSearch = (value) => {
-    setParams(value ? { q: value } : {}, { replace: true });
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setParams(keyword ? { q: keyword } : {}, { replace: true });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [keyword, setParams]);
+
+  const handleSearch = (value) => setQuery(value);
 
   // 이름, 지역, 레벨 이름(등린이/중수/챌린저), 목록 이름(명산100+)으로 검색
   const filtered = mountainList.filter(
