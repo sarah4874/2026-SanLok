@@ -1,5 +1,4 @@
 // 날씨: Open-Meteo (https://open-meteo.com) — 무료, API 키 필요 없음
-// elevation에 산 높이를 넣으면 정상 높이 기준 기온으로 보정해 줍니다.
 
 const WEATHER_CODES = {
   0: ["맑음"],
@@ -37,66 +36,74 @@ export function describeWeather(code) {
   return { text };
 }
 
-const cache = new Map();
+// 날씨는 우리 서버(/api/weather)를 거쳐 받아 옵니다. (api/weather.js 참고)
+// 한 번 받은 산은 30분 동안 브라우저에 저장해서, 새로고침해도 바로 보여요.
+const CACHE_KEY = "sanlok_weather";
+const CACHE_MINUTES = 30;
+const TIMEOUT_MS = 10000;
+const memory = new Map();
 
-// 연결이 잠깐 끊기는 경우가 있어서 실패하면 조금 기다렸다가 두 번 더 시도합니다.
-async function fetchWithRetry(url, tries = 3) {
-  for (let i = 0; i < tries; i++) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
-    } catch (err) {
-      if (i === tries - 1) {
-        console.warn("날씨 불러오기 실패:", err);
-        throw new Error("날씨 정보를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.");
-      }
-      await new Promise((resolve) => setTimeout(resolve, 800 * (i + 1)));
+function readCache(id) {
+  if (memory.has(id)) return memory.get(id);
+  try {
+    const item = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}")[id];
+    if (item && Date.now() - item.savedAt < CACHE_MINUTES * 60 * 1000) return item.days;
+  } catch {
+    // 저장된 값을 못 읽어도 새로 받으면 됨
+  }
+  return null;
+}
+
+function writeCache(id, days) {
+  memory.set(id, days);
+  try {
+    const all = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
+    // 오래된 항목은 정리
+    for (const key of Object.keys(all)) {
+      if (Date.now() - all[key].savedAt > CACHE_MINUTES * 60 * 1000) delete all[key];
     }
+    all[id] = { savedAt: Date.now(), days };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(all));
+  } catch {
+    // 저장 실패해도 화면은 동작
   }
 }
 
-export async function fetchForecast(mountain) {
-  const key = mountain.id;
-  if (cache.has(key)) return cache.get(key);
+// 같은 산을 동시에 여러 번 요청하면 하나로 합침
+const pending = new Map();
 
-  const params = new URLSearchParams({
-    latitude: mountain.lat,
-    longitude: mountain.lng,
-    elevation: mountain.height,
-    daily:
-      "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset",
-    wind_speed_unit: "ms",
-    timezone: "Asia/Seoul",
-    forecast_days: "16",
-  });
+export function fetchForecast(mountain) {
+  const cached = readCache(mountain.id);
+  if (cached) return Promise.resolve(cached);
+  if (!pending.has(mountain.id)) {
+    pending.set(
+      mountain.id,
+      requestForecast(mountain).finally(() => pending.delete(mountain.id)),
+    );
+  }
+  return pending.get(mountain.id);
+}
 
-  const url = `https://api.open-meteo.com/v1/forecast?${params}`;
-  const json = await fetchWithRetry(url);
-  const d = json.daily;
+async function requestForecast(mountain) {
+  // 10초 안에 응답이 없으면 포기 (무한정 기다리지 않게)
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(`/api/weather?id=${encodeURIComponent(mountain.id)}`, { signal: controller.signal });
+  } catch {
+    throw new Error("날씨 정보를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.");
+  } finally {
+    clearTimeout(timer);
+  }
 
-  // 예보 마지막 날은 값이 비어(null) 있을 때가 있어서 빼고 씁니다.
-  const days = d.time
-    .map((date, i) => ({
-      date,
-      code: d.weather_code[i],
-      max: d.temperature_2m_max[i],
-      min: d.temperature_2m_min[i],
-      rain: d.precipitation_probability_max[i] ?? 0,
-      wind: d.wind_speed_10m_max[i],
-      sunrise: d.sunrise[i]?.slice(11, 16),
-      sunset: d.sunset[i]?.slice(11, 16),
-    }))
-    .filter((day) => day.max !== null && day.min !== null && day.wind !== null && day.code !== null)
-    .map((day) => ({
-      ...day,
-      max: Math.round(day.max),
-      min: Math.round(day.min),
-      wind: Math.round(day.wind * 10) / 10,
-    }));
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !Array.isArray(data.days)) {
+    throw new Error(data.error || "날씨 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+  }
 
-  cache.set(key, days);
-  return days;
+  writeCache(mountain.id, data.days);
+  return data.days;
 }
 
 // 산행 안전 체크
